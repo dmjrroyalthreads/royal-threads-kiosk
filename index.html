@@ -131,6 +131,20 @@
   #toast.show {
     transform: translateY(0);
   }
+  .lang-badge {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: var(--teal);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
 </style>
 </head>
 <body>
@@ -142,11 +156,11 @@
     <div class="subtitle">Please select your language / Seleccione su idioma</div>
     <div class="button-row">
       <div class="big-btn" data-lang="en">
-        <div class="icon">🇺🇸</div>
+        <div class="lang-badge">EN</div>
         <div class="label">English</div>
       </div>
       <div class="big-btn" data-lang="es">
-        <div class="icon">🇲🇽</div>
+        <div class="lang-badge">ES</div>
         <div class="label">Español</div>
       </div>
     </div>
@@ -201,10 +215,8 @@
   };
 
   const TOAST_MESSAGES = {
-    "checkin-en":  "You're checked in! Welcome to Royal Threads.",
-    "checkin-es":  "¡Registro exitoso! Bienvenido a Royal Threads.",
-    "checkout-en": "You're checked out. Thanks for visiting!",
-    "checkout-es": "Salida registrada. ¡Gracias por su visita!"
+    "checkin":  "You're checked in! Welcome to Royal Threads. / ¡Registro exitoso! Bienvenido a Royal Threads.",
+    "checkout": "You're checked out. Thanks for visiting! / Salida registrada. ¡Gracias por su visita!"
   };
 
   const screenLanguage = document.getElementById('screen-language');
