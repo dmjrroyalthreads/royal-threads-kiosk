@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>Royal Threads Visitor Check-In</title>
+<style>
+  :root {
+    --teal: #1f9d84;
+    --teal-dark: #17755f;
+    --bg: #f4f6f7;
+    --text: #1f2933;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background: var(--bg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    color: var(--text);
+    overflow: hidden;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  #app {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .logo {
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .subtitle {
+    font-size: clamp(16px, 2.5vw, 22px);
+    color: #52606d;
+    margin-bottom: 48px;
+    text-align: center;
+  }
+  .screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 900px;
+  }
+  .screen.active {
+    display: flex;
+  }
+  .button-row {
+    display: flex;
+    gap: 32px;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .big-btn {
+    flex: 1 1 280px;
+    max-width: 380px;
+    min-height: 220px;
+    background: #fff;
+    border: 3px solid var(--teal);
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    transition: transform 0.08s ease, background 0.15s ease;
+    padding: 24px;
+  }
+  .big-btn:active {
+    transform: scale(0.97);
+    background: #eafaf5;
+  }
+  .big-btn .icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+  }
+  .big-btn .label {
+    font-size: clamp(24px, 3vw, 32px);
+    font-weight: 700;
+    color: var(--teal-dark);
+    text-align: center;
+  }
+  .action-btn {
+    background: var(--teal);
+    border-color: var(--teal);
+  }
+  .action-btn .label {
+    color: #fff;
+  }
+  .action-btn:active {
+    background: var(--teal-dark);
+  }
+  .back-link {
+    margin-top: 40px;
+    font-size: 18px;
+    color: #52606d;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 12px 20px;
+  }
+  #toast {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 28px 24px;
+    background: var(--teal);
+    color: #fff;
+    font-size: clamp(20px, 3vw, 28px);
+    font-weight: 700;
+    text-align: center;
+    transform: translateY(-100%);
+    transition: transform 0.4s ease;
+    z-index: 50;
+  }
+  #toast.show {
+    transform: translateY(0);
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Screen 1: Language choice -->
+  <div id="screen-language" class="screen active">
+    <div class="logo">Royal Threads</div>
+    <div class="subtitle">Please select your language / Seleccione su idioma</div>
+    <div class="button-row">
+      <div class="big-btn" data-lang="en">
+        <div class="icon">🇺🇸</div>
+        <div class="label">English</div>
+      </div>
+      <div class="big-btn" data-lang="es">
+        <div class="icon">🇲🇽</div>
+        <div class="label">Español</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 2: Check In / Check Out choice -->
+  <div id="screen-action" class="screen">
+    <div class="logo" id="action-title">Royal Threads</div>
+    <div class="subtitle" id="action-subtitle">What would you like to do?</div>
+    <div class="button-row">
+      <div class="big-btn action-btn" data-action="checkin">
+        <div class="icon">✅</div>
+        <div class="label" id="checkin-label">Check In</div>
+      </div>
+      <div class="big-btn action-btn" data-action="checkout">
+        <div class="icon">👋</div>
+        <div class="label" id="checkout-label">Check Out</div>
+      </div>
+    </div>
+    <div class="back-link" id="back-link">Change language / Cambiar idioma</div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+  // ------------------------------------------------------------------
+  // FILL THESE IN: paste the exact live URLs for each of the four forms.
+  // Copy each full URL from the browser address bar while that form is open.
+  // ------------------------------------------------------------------
+  const FORM_URLS = {
+    checkin_en:  "https://forms.zohopublic.com/dmelendez/form/DurhamVisitorCheckIn/formperma/7GyrzitvgmrK8PyCEXmGzaCzf3llJwSzfFkIFviA4Ac",
+    checkin_es:  "https://forms.zohopublic.com/dmelendez/form/DurhamVisitorCheckIn/formperma/7GyrzitvgmrK8PyCEXmGzaCzf3llJwSzfFkIFviA4Ac?zf_lang=es",
+    checkout_en: "https://forms.zohopublic.com/dmelendez/form/RoyalThreadsVisitorCheckoutDurham/formperma/a3NcGrZi3pa3v5ncPVZZSLSKSJr3IAyU3eGLReIq_qI",
+    checkout_es: "https://forms.zohopublic.com/dmelendez/form/RoyalThreadsVisitorCheckoutDurham/formperma/a3NcGrZi3pa3v5ncPVZZSLSKSJr3IAyU3eGLReIq_qI?zf_lang=es"
+  };
+
+  const TEXT = {
+    en: {
+      subtitle: "What would you like to do?",
+      checkin: "Check In",
+      checkout: "Check Out",
+      back: "Change language / Cambiar idioma"
+    },
+    es: {
+      subtitle: "¿Qué desea hacer?",
+      checkin: "Registrar Entrada",
+      checkout: "Registrar Salida",
+      back: "Change language / Cambiar idioma"
+    }
+  };
+
+  const TOAST_MESSAGES = {
+    "checkin-en":  "You're checked in! Welcome to Royal Threads.",
+    "checkin-es":  "¡Registro exitoso! Bienvenido a Royal Threads.",
+    "checkout-en": "You're checked out. Thanks for visiting!",
+    "checkout-es": "Salida registrada. ¡Gracias por su visita!"
+  };
+
+  const screenLanguage = document.getElementById('screen-language');
+  const screenAction = document.getElementById('screen-action');
+  const actionSubtitle = document.getElementById('action-subtitle');
+  const checkinLabel = document.getElementById('checkin-label');
+  const checkoutLabel = document.getElementById('checkout-label');
+  const backLink = document.getElementById('back-link');
+  const toast = document.getElementById('toast');
+
+  let currentLang = 'en';
+  let idleTimer = null;
+
+  function showLanguageScreen() {
+    screenAction.classList.remove('active');
+    screenLanguage.classList.add('active');
+    clearTimeout(idleTimer);
+  }
+
+  function showActionScreen(lang) {
+    currentLang = lang;
+    actionSubtitle.textContent = TEXT[lang].subtitle;
+    checkinLabel.textContent = TEXT[lang].checkin;
+    checkoutLabel.textContent = TEXT[lang].checkout;
+    backLink.textContent = TEXT[lang].back;
+    screenLanguage.classList.remove('active');
+    screenAction.classList.add('active');
+    resetIdleTimer();
+  }
+
+  function resetIdleTimer() {
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(showLanguageScreen, 60000); // 60s idle -> reset
+  }
+
+  document.querySelectorAll('#screen-language .big-btn').forEach(btn => {
+    btn.addEventListener('click', () => showActionScreen(btn.dataset.lang));
+  });
+
+  document.querySelectorAll('#screen-action .big-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const action = btn.dataset.action; // 'checkin' or 'checkout'
+      const key = action + '_' + currentLang;
+      const url = FORM_URLS[key];
+      window.location.href = url;
+    });
+  });
+
+  backLink.addEventListener('click', showLanguageScreen);
+
+  // Reset idle timer on any tap while on the action screen
+  document.addEventListener('click', () => {
+    if (screenAction.classList.contains('active')) resetIdleTimer();
+  });
+
+  // Show a success toast if we were just redirected back from a form submission
+  (function checkStatus() {
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get('status');
+    if (status && TOAST_MESSAGES[status]) {
+      toast.textContent = TOAST_MESSAGES[status];
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 4000);
+      // Clean the URL so refreshing doesn't re-show the toast
+      history.replaceState({}, document.title, window.location.pathname);
+    }
+  })();
+</script>
+</body>
+</html>
