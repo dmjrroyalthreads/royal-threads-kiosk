@@ -7,7 +7,7 @@ This repository contains portfolio briefs and frontend documentation for systems
 A responsive frontend web interface designed for an iPad-based visitor registration kiosk deployed at the Raleigh facility. This system was developed to eliminate manual, paper-based visitor tracking, reduce front-desk administrative overhead, and improve facility security compliance.
 
 ### Live Frontend Demo
-Link: https://github.io
+Link: https://dmjrroyalthreads.github.io/royal-threads-kiosk/
 
 ### Project Overview and Business Value
 In a high-volume manufacturing and corporate facility, manual visitor logging creates operational bottlenecks and data silos. This kiosk interface serves as the frontend for an automated check-in pipeline designed to address these challenges by:
